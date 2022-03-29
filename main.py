@@ -47,7 +47,7 @@ def pol2cart(theta, rho):
 
 
 nBands = 10
-mSize = 100
+mSize = 60
 mzSize = 5
 filts = np.ones((nBands, 1))
 #print("filts değerli :")
@@ -184,9 +184,6 @@ for i in range(0,512):
 print('matris2', colAssignment)
 #plt.imsave("test.png",colAssignment)
 plt.imsave("nothasta_yönelim.png",colAssignment)
-#cv2.imshow("fffff", colAssignment)
-#cv2.imshow("sssss", maxInColumns)
-
 
 for i in range(1,8,3):
     new_name="saglikli"+str(i)+".png"
@@ -203,7 +200,7 @@ _, im = cv2.threshold(im, 120, 255, cv2.THRESH_BINARY_INV)
 plt.subplot(2, 2, 2)
 plt.imshow(im, cmap="gray")
 
-im = cv2.morphologyEx(im, cv2.MORPH_OPEN, np.ones([20, 20]))  # gurultuden kurtul
+im2 = cv2.morphologyEx(im, cv2.MORPH_OPEN, np.ones([1,5]))  # gurultuden kurtul
 _, comp = cv2.connectedComponents(im)  # connected components analizi
 plt.subplot(2, 2, 3)
 plt.imshow(im, cmap="gray")
