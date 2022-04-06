@@ -47,7 +47,7 @@ def pol2cart(theta, rho):
 
 
 nBands = 10
-mSize = 60
+mSize = 40
 mzSize = 5
 filts = np.ones((nBands, 1))
 #print("filts değerli :")
@@ -139,6 +139,7 @@ import numpy as np
 from scipy.signal import convolve2d
 from scipy.ndimage.filters import convolve
 from skimage import io, img_as_float
+import time
 ConvolResults = []
 
 for value in range(0,len(FilteringResutls)):
@@ -171,7 +172,7 @@ np.set_printoptions(threshold=sys.maxsize)
 #cv2.imshow("nothasta_Max_Responce.png", selVals)
 plt.imsave("maxResponce.png", selVals, cmap='gray')
 
-
+"""
 for i in range(0,512):
     for k in range(0,512):
         if(0<=colAssignment[i][k]<=2):
@@ -180,38 +181,133 @@ for i in range(0,512):
             colAssignment[i][k] =4
         if (6 <= colAssignment[i][k]<9):
             colAssignment[i][k] =7
-
+"""
 print('matris2', colAssignment)
 #plt.imsave("test.png",colAssignment)
 plt.imsave("nothasta_yönelim.png",colAssignment)
+c = plt.imshow(colAssignment)
+bounds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+plt.colorbar(c,boundaries=bounds)
+plt.title('Yönelim Haritası', fontweight ="bold")
+plt.show()
+#cv2.imshow("sssss", maxInColumns)
 
-for i in range(1,8,3):
+
+for i in range(0,10,1):
     new_name="saglikli"+str(i)+".png"
     new_colAssignment=np.where(colAssignment == i, colAssignment, -1)
     plt.imsave(new_name, new_colAssignment)
 
+"""for l in range(0,10,1):
+    if(l==0 or l==1 or l==2 or l==7 or l==8 or l==9):
+        im = cv2.imread("saglikli"+str(l)+".png", 0)  # dosyayi oku
+        plt.subplot(2, 2, 1)
+        plt.imshow(im, cmap="gray")
 
-im = cv2.imread("saglikli1.png", 0)  # dosyayi oku
-plt.subplot(2, 2, 1)
-plt.imshow(im, cmap="gray")
+        # inverse ikili esik degeri
+        _, im = cv2.threshold(im, 120, 255, cv2.THRESH_BINARY_INV)
+        plt.subplot(2, 2, 2)
+        plt.imshow(im, cmap="gray")
 
-# inverse ikili esik degeri
-_, im = cv2.threshold(im, 120, 255, cv2.THRESH_BINARY_INV)
-plt.subplot(2, 2, 2)
-plt.imshow(im, cmap="gray")
+        im = cv2.morphologyEx(im, cv2.MORPH_OPEN, np.ones([30, 15]))  # gurultuden kurtul
+        _, comp = cv2.connectedComponents(im)  # connected components analizi
+        plt.subplot(2, 2, 3)
+        plt.imshow(im, cmap="gray")
+        '''
+            temp = 0
+            for i in range(0,512):
+                temp = 0
+                for k in range(0,512):
+                    if(comp[i][k]==1):
+                        temp=comp[i][k]+temp
+                        if(temp==100):
+                            for j in range(0,512):
+                                comp[i][j]=0
+                        temp=0
+            '''
+        plt.subplot(2, 2, 4, label="renk1")
+        c = plt.imshow(comp, cmap="nipy_spectral",label="renk2")
+        bounds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        plt.colorbar(c,boundaries=bounds)
+        plt.title('Connected Component Analysis', fontweight ="bold")
+        print(comp)
 
-im2 = cv2.morphologyEx(im, cv2.MORPH_OPEN, np.ones([1,5]))  # gurultuden kurtul
-_, comp = cv2.connectedComponents(im)  # connected components analizi
-plt.subplot(2, 2, 3)
-plt.imshow(im, cmap="gray")
+        plt.imsave("CCA"+str(l)+".png", comp)
+        cv2.waitKey(0)
+    else:
+        im = cv2.imread("saglikli" + str(l) + ".png", 0)  # dosyayi oku
+        plt.subplot(2, 2, 1)
+        plt.imshow(im, cmap="gray")
 
-plt.subplot(2, 2, 4, label="1")
-plt.imshow(comp, cmap="nipy_spectral",label="2")
+        # inverse ikili esik degeri
+        _, im = cv2.threshold(im, 120, 255, cv2.THRESH_BINARY_INV)
+        plt.subplot(2, 2, 2)
+        plt.imshow(im, cmap="gray")
 
-plt.show()
+        im = cv2.morphologyEx(im, cv2.MORPH_OPEN, np.ones([15, 30]))  # gurultuden kurtul
+        _, comp = cv2.connectedComponents(im)  # connected components analizi
+        plt.subplot(2, 2, 3)
+        plt.imshow(im, cmap="gray")
+        '''
+            temp = 0
+            for i in range(0,512):
+                temp = 0
+                for k in range(0,512):
+                    if(comp[i][k]==1):
+                        temp=comp[i][k]+temp
+                        if(temp==100):
+                            for j in range(0,512):
+                                comp[i][j]=0
+                        temp=0
+            '''
+        plt.subplot(2, 2, 4, label="renk1")
+        c = plt.imshow(comp, cmap="nipy_spectral", label="renk2")
+        bounds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        plt.colorbar(c, boundaries=bounds)
+        plt.title('Connected Component Analysis', fontweight="bold")
+        print(comp)
 
-cv2.waitKey(0)
+        plt.imsave("CCA" + str(l) + ".png", comp)
+        cv2.waitKey(0)"""
 
+for x in range(0,10,1):
+    img = cv2.imread('saglikli'+str(x)+'.png', 0)
+    img = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)[1]  # ensure binary
+    retval, labels = cv2.connectedComponents(img)
+
+    ##################################################
+    ts = time.time()
+    num = labels.max()
+
+    N = 300
+    for i in range(1, num+1):
+        pts =  np.where(labels == i)
+        if len(pts[0]) < N:
+            labels[pts] = 0
+    for y in range(1, num+1):
+        pts =  np.where(labels == y)
+        if len(pts[0]) > 3000:
+            labels[pts] = 0
+
+    print("Time passed: {:.3f} ms".format(1000*(time.time()-ts)))
+    # Time passed: 4.607 ms
+
+    ##################################################
+
+    # Map component labels to hue val
+    label_hue = np.uint8(179*labels/np.max(labels))
+    blank_ch = 255*np.ones_like(label_hue)
+    labeled_img = cv2.merge([label_hue, blank_ch, blank_ch])
+
+    # cvt to BGR for display
+    labeled_img = cv2.cvtColor(labeled_img, cv2.COLOR_HSV2BGR)
+
+    # set bg label to black
+    labeled_img[label_hue==0] = 0
+
+    #cv2.imshow('labeled'+x+'.png', labeled_img)
+    cv2.imwrite('labeled'+str(x)+'.png', labeled_img)
+    cv2.waitKey()
 
 
 
