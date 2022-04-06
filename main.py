@@ -47,8 +47,11 @@ def pol2cart(theta, rho):
 
 
 nBands = 10
-mSize = 40
+mSize = 40   #10 100 5 300 2500
 mzSize = 5
+MINN = 300     #Connected comp. analiz için gerekli olan alanın  min değeri.
+MAXN = 2500   # Connected comp için alanın olacağı max değer.
+
 filts = np.ones((nBands, 1))
 #print("filts değerli :")
 #print(filts)
@@ -182,7 +185,7 @@ for i in range(0,512):
         if (6 <= colAssignment[i][k]<9):
             colAssignment[i][k] =7
 """
-print('matris2', colAssignment)
+#print('matris2', colAssignment)
 #plt.imsave("test.png",colAssignment)
 plt.imsave("nothasta_yönelim.png",colAssignment)
 c = plt.imshow(colAssignment)
@@ -279,14 +282,14 @@ for x in range(0,10,1):
     ts = time.time()
     num = labels.max()
 
-    N = 300
+
     for i in range(1, num+1):
         pts =  np.where(labels == i)
-        if len(pts[0]) < N:
+        if len(pts[0]) < MINN:
             labels[pts] = 0
     for y in range(1, num+1):
         pts =  np.where(labels == y)
-        if len(pts[0]) > 3000:
+        if len(pts[0]) > MAXN:
             labels[pts] = 0
 
     print("Time passed: {:.3f} ms".format(1000*(time.time()-ts)))
@@ -309,21 +312,57 @@ for x in range(0,10,1):
     cv2.imwrite('labeled'+str(x)+'.png', labeled_img)
     cv2.waitKey()
 
+img1 = cv2.imread('labeled0.png')
+img2 = cv2.imread('labeled1.png')
+dst = cv2.addWeighted(img1, 1, img2, 1, 0)
+img3 = cv2.imread('labeled2.png')
+dst1 = cv2.addWeighted(dst, 1, img3, 1, 0)
+img4 = cv2.imread('labeled3.png')
+dst2 = cv2.addWeighted(dst1, 1, img4, 1, 0)
+img5 = cv2.imread('labeled4.png')
+dst3 = cv2.addWeighted(dst2, 1, img5, 1, 0)
+img6 = cv2.imread('labeled5.png')
+dst4 = cv2.addWeighted(dst3, 1, img6, 1, 0)
+img7 = cv2.imread('labeled6.png')
+dst5 = cv2.addWeighted(dst4, 1, img7, 1, 0)
+img8 = cv2.imread('labeled7.png')
+dst6 = cv2.addWeighted(dst5, 1, img8, 1, 0)
+img9 = cv2.imread('labeled8.png')
+dst7 = cv2.addWeighted(dst6, 1, img9, 1, 0)
+img10 = cv2.imread('labeled9.png')
+dst8 = cv2.addWeighted(dst7, 1, img10, 1, 0)
+
+#cv2.imshow('Blended Image',dst8)
+plt.imsave("Overlay.png" , dst8)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
 
 
 
+img = cv2.imread('"Overlay.png')
+
+#img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+_, thresh = cv2.threshold(img, 225, 255, cv2.THRESH_BINARY_INV)
+kernal = np.ones((2, 2), np.uint8)
+
+dilation = cv2.dilate(thresh, kernal, iterations=2)
+
+contours, hierarchy = cv2.findContours(
+    dilation, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+objects = str(len(contours))
+
+text = "Obj:"+str(objects)
+cv2.putText(dilation, text, (10, 25),  cv2.FONT_HERSHEY_SIMPLEX,
+            0.4, (240, 0, 159), 1)
 
 
+cv2.imshow('Original', img)
+cv2.imshow('Thresh', thresh)
+cv2.imshow('Dilation', dilation)
 
-
-
-
-
-
-
-
-
-
+cv2.waitKey(0)
+cv2.destroyAllWindows()
 
 
 
