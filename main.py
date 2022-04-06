@@ -45,9 +45,10 @@ def pol2cart(theta, rho):
     y = rho * np.sin(theta)
     return (x, y)
 
-
+#Samet Değerler:   #10  40 5 500 2500
+#Kubilay Değerler: #10 100 5 300 2500
 nBands = 10
-mSize = 40   #10 100 5 300 2500
+mSize = 40
 mzSize = 5
 MINN = 300     #Connected comp. analiz için gerekli olan alanın  min değeri.
 MAXN = 2500   # Connected comp için alanın olacağı max değer.
@@ -363,6 +364,5 @@ cv2.imshow('Dilation', dilation)
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()
-
 
 
