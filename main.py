@@ -328,35 +328,53 @@ img10 = cv2.imread('labeled9.png')
 dst8 = cv2.addWeighted(dst7, 1, img10, 1, 0)
 
 #cv2.imshow('Blended Image',dst8)
-plt.imsave("Overlay.png" , dst8)
+plt.imsave("labeled10.png" , dst8)
 
 
-img = Image.open("Overlay.png")
+YonelimYuzdeler = []
+for x in range(0,11,1):
+    img = Image.open("labeled"+str(x)+'.png')
+    for i in range(0, img.size[0] - 1):
+        for j in range(0, img.size[1] - 1):
+            pixelColorVals = img.getpixel((i, j));
+            redPixel = 255 - pixelColorVals[0];  # Negate red pixel
+            greenPixel = 255 - pixelColorVals[1];  # Negate green pixel
+            bluePixel = 255 - pixelColorVals[2];  # Negate blue pixel
+            img.putpixel((i, j), (redPixel, greenPixel, bluePixel));
+    img.save("new.png")
 
-for i in range(0, img.size[0] - 1):
-
-    for j in range(0, img.size[1] - 1):
-
-        pixelColorVals = img.getpixel((i, j));
-        redPixel = 255 - pixelColorVals[0];  # Negate red pixel
-        greenPixel = 255 - pixelColorVals[1];  # Negate green pixel
-        bluePixel = 255 - pixelColorVals[2];  # Negate blue pixel
-        img.putpixel((i, j), (redPixel, greenPixel, bluePixel));
-img.save("new.png")
-
-img = cv2.imread('new.png')
-img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-_, thresh = cv2.threshold(img, 244, 255, cv2.THRESH_BINARY_INV)
-kernal = np.ones((2, 2), np.uint8)
-dilation = cv2.dilate(thresh, kernal, iterations=2)
-contours, hierarchy = cv2.findContours(dilation, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-objects = str(len(contours))
-text = "Obj:"+str(objects)
-cv2.putText(dilation, text, (10, 25),  cv2.FONT_HERSHEY_SIMPLEX, 0.8, (240, 0, 159), 1)
-cv2.imshow('Dilation', dilation)
-print(text)
-cv2.waitKey(0)
+    img = cv2.imread('new.png')
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    _, thresh = cv2.threshold(img, 244, 255, cv2.THRESH_BINARY_INV)
+    kernal = np.ones((2, 2), np.uint8)
+    dilation = cv2.dilate(thresh, kernal, iterations=2)
+    contours, hierarchy = cv2.findContours(dilation, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    objects = len(contours)-1
+    YonelimYuzdeler.append(int(objects))
+    text = "Obj:"+str(objects)
+    cv2.putText(dilation, text, (10, 25),  cv2.FONT_HERSHEY_SIMPLEX, 0.8, (240, 0, 159), 1)
+    #cv2.imshow('Dilation', dilation)
+    print(text)
+    cv2.waitKey(0)
+objects
+print("Görüntüdeki Collagen Bundle Sayısı: ",objects)
+c=36
+for y in range(0,10,1):
+    temp=int(float(YonelimYuzdeler[y]/objects) * 100)
+    print("Yonelim",y,"'in %",temp,"i Y eksenine göre",c,"derecelik açıya aittir.")
+    c+=36
 cv2.destroyAllWindows()
+
+
+
+
+
+
+
+
+
+
+
 
 
 
