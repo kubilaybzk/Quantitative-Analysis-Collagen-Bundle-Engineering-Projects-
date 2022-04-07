@@ -4,12 +4,18 @@ Samet Kara
 Hüsna Şişli
 '''
 import math
-import cv2
 import skimage.exposure as exposure
 import matplotlib.pyplot as plt
 from skimage import draw
-import numpy as np
 import skimage
+import sys
+import cv2
+import numpy as np
+from scipy.signal import convolve2d
+from scipy.ndimage.filters import convolve
+from skimage import io, img_as_float
+import time
+from PIL import Image
 
 
 
@@ -45,14 +51,10 @@ def pol2cart(theta, rho):
     y = rho * np.sin(theta)
     return (x, y)
 
-#Samet Değerler:   #10  40 5 500 2500
-#Kubilay Değerler: #10 100 5 300 2500
+
 nBands = 10
 mSize = 40
 mzSize = 5
-MINN = 300     #Connected comp. analiz için gerekli olan alanın  min değeri.
-MAXN = 2500   # Connected comp için alanın olacağı max değer.
-
 filts = np.ones((nBands, 1))
 #print("filts değerli :")
 #print(filts)
@@ -137,13 +139,6 @@ for k in range(0, int(toplam_eleman)):
     #plt.imshow(mask)
     #plt.show()
 
-import sys
-import cv2
-import numpy as np
-from scipy.signal import convolve2d
-from scipy.ndimage.filters import convolve
-from skimage import io, img_as_float
-import time
 ConvolResults = []
 
 for value in range(0,len(FilteringResutls)):
@@ -186,7 +181,7 @@ for i in range(0,512):
         if (6 <= colAssignment[i][k]<9):
             colAssignment[i][k] =7
 """
-#print('matris2', colAssignment)
+print('matris2', colAssignment)
 #plt.imsave("test.png",colAssignment)
 plt.imsave("nothasta_yönelim.png",colAssignment)
 c = plt.imshow(colAssignment)
@@ -283,14 +278,14 @@ for x in range(0,10,1):
     ts = time.time()
     num = labels.max()
 
-
+    N = 600
     for i in range(1, num+1):
         pts =  np.where(labels == i)
-        if len(pts[0]) < MINN:
+        if len(pts[0]) < N:
             labels[pts] = 0
     for y in range(1, num+1):
         pts =  np.where(labels == y)
-        if len(pts[0]) > MAXN:
+        if len(pts[0]) > 2500:
             labels[pts] = 0
 
     print("Time passed: {:.3f} ms".format(1000*(time.time()-ts)))
@@ -302,7 +297,6 @@ for x in range(0,10,1):
     label_hue = np.uint8(179*labels/np.max(labels))
     blank_ch = 255*np.ones_like(label_hue)
     labeled_img = cv2.merge([label_hue, blank_ch, blank_ch])
-
     # cvt to BGR for display
     labeled_img = cv2.cvtColor(labeled_img, cv2.COLOR_HSV2BGR)
 
@@ -311,7 +305,7 @@ for x in range(0,10,1):
 
     #cv2.imshow('labeled'+x+'.png', labeled_img)
     cv2.imwrite('labeled'+str(x)+'.png', labeled_img)
-    cv2.waitKey()
+    cv2.waitKey(0)
 
 img1 = cv2.imread('labeled0.png')
 img2 = cv2.imread('labeled1.png')
@@ -335,34 +329,48 @@ dst8 = cv2.addWeighted(dst7, 1, img10, 1, 0)
 
 #cv2.imshow('Blended Image',dst8)
 plt.imsave("Overlay.png" , dst8)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
 
 
+img = Image.open("Overlay.png")
 
-img = cv2.imread('"Overlay.png')
+for i in range(0, img.size[0] - 1):
 
-#img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-_, thresh = cv2.threshold(img, 225, 255, cv2.THRESH_BINARY_INV)
+    for j in range(0, img.size[1] - 1):
+
+        pixelColorVals = img.getpixel((i, j));
+        redPixel = 255 - pixelColorVals[0];  # Negate red pixel
+        greenPixel = 255 - pixelColorVals[1];  # Negate green pixel
+        bluePixel = 255 - pixelColorVals[2];  # Negate blue pixel
+        img.putpixel((i, j), (redPixel, greenPixel, bluePixel));
+img.save("new.png")
+
+img = cv2.imread('new.png')
+img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+_, thresh = cv2.threshold(img, 244, 255, cv2.THRESH_BINARY_INV)
 kernal = np.ones((2, 2), np.uint8)
-
 dilation = cv2.dilate(thresh, kernal, iterations=2)
-
-contours, hierarchy = cv2.findContours(
-    dilation, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
+contours, hierarchy = cv2.findContours(dilation, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 objects = str(len(contours))
-
 text = "Obj:"+str(objects)
-cv2.putText(dilation, text, (10, 25),  cv2.FONT_HERSHEY_SIMPLEX,
-            0.4, (240, 0, 159), 1)
-
-
-cv2.imshow('Original', img)
-cv2.imshow('Thresh', thresh)
+cv2.putText(dilation, text, (10, 25),  cv2.FONT_HERSHEY_SIMPLEX, 0.8, (240, 0, 159), 1)
 cv2.imshow('Dilation', dilation)
-
+print(text)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
