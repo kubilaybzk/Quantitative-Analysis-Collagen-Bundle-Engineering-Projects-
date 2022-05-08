@@ -351,7 +351,7 @@ for x in range(0,11,1):
     contours, hierarchy = cv2.findContours(dilation, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     objects = len(contours)-1
     YonelimYuzdeler.append(int(objects))
-    text = "Obj:"+str(objects)
+    text = "Yonelim:"+str(objects)
     cv2.putText(dilation, text, (10, 25),  cv2.FONT_HERSHEY_SIMPLEX, 0.8, (240, 0, 159), 1)
     #cv2.imshow('Dilation', dilation)
     print(text)
@@ -361,7 +361,7 @@ print("Görüntüdeki Collagen Bundle Sayısı: ",objects)
 c=36
 for y in range(0,10,1):
     temp=int(float(YonelimYuzdeler[y]/objects) * 100)
-    print("Yonelim",y,"'in %",temp,"i Y eksenine göre",c,"derecelik açıya aittir.")
+    print("Yonelim",y,"'daki Collagen Bundles sayısı toplam Bundles sayısının %",temp,"'i kadardır ve Y eksenine göre",c,"derecelik açıya aittir.")
     c+=36
 cv2.destroyAllWindows()
 
