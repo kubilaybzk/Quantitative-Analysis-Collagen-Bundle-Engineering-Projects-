@@ -3,6 +3,8 @@ Kubilay Bozak
 Samet Kara
 Hüsna Şişli
 '''
+
+
 import math
 import skimage.exposure as exposure
 import matplotlib.pyplot as plt
@@ -17,7 +19,10 @@ from skimage import io, img_as_float
 import time
 from PIL import Image
 
-
+#Görselin adı
+#nBands = 10
+#mSize = 40
+#mzSize = 5
 
 def polygon2mask(image_shape, polygon):
     mask = skimage.draw.polygon2mask(image_shape, polygon)
@@ -30,7 +35,7 @@ def mypolygon_perimeter(X, Y, image_shape):
 
 
 # read images
-imgs = cv2.imreadmulti("health1.tif", flags=cv2.IMREAD_GRAYSCALE + cv2.IMREAD_ANYDEPTH)[1]
+imgs = cv2.imreadmulti("health.tif", flags=cv2.IMREAD_GRAYSCALE + cv2.IMREAD_ANYDEPTH)[1]
 
 for i, img in enumerate(imgs):
     filename = f"face_1_frame-{i}.png"
