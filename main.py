@@ -35,7 +35,7 @@ def mypolygon_perimeter(X, Y, image_shape):
 
 
 # read images
-imgs = cv2.imreadmulti("health.tif", flags=cv2.IMREAD_GRAYSCALE + cv2.IMREAD_ANYDEPTH)[1]
+imgs = cv2.imreadmulti("health1.tif", flags=cv2.IMREAD_GRAYSCALE + cv2.IMREAD_ANYDEPTH)[1]
 
 for i, img in enumerate(imgs):
     filename = f"face_1_frame-{i}.png"
@@ -375,48 +375,19 @@ kernel = np.ones((5, 5), 'uint8')
 #dst8
 dilate_img = cv2.dilate(dst8, kernel, iterations=1)
 cv2.imshow('Dilated Image', dilate_img)
+cv2.imwrite("Dilated Image.png",dilate_img)
 cv2.waitKey(0)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<<<<<<< HEAD
-=======
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
->>>>>>> fa69301ee9c5049d866b073ded70400079ecda5c
-
-
+img = img_as_float(io.imread('Dilated Image.png', as_gray=True))
+for i in range(0,512):
+    for k in range(0,512):
+        if(img[i][k]>0):
+            img[i][k] = 1
+cv2.imshow("img2",img)
+cv2.waitKey(0)
+img2 = img_as_float(io.imread('face_1_frame-0.png', as_gray=True))
+result=img2*img
+plt.imsave("Dilated Image With Defauld.png",result)
+cv2.imshow("result",result)
+cv2.waitKey(0)
