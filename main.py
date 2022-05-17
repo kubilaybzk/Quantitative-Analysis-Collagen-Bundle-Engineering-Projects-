@@ -371,7 +371,7 @@ for y in range(0,10,1):
 cv2.destroyAllWindows()
 
 
-kernel = np.ones((5, 5), 'uint8')
+kernel = np.ones((10, 10), 'uint8')
 #dst8
 dilate_img = cv2.dilate(dst8, kernel, iterations=1)
 cv2.imshow('Dilated Image', dilate_img)
