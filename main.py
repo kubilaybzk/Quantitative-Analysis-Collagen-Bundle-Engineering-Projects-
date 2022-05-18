@@ -24,6 +24,12 @@ from PIL import Image
 #mSize = 40
 #mzSize = 5
 
+nBands = 10
+mSize = 40
+mzSize = 5
+filts = np.ones((nBands, 1))
+
+
 def polygon2mask(image_shape, polygon):
     mask = skimage.draw.polygon2mask(image_shape, polygon)
     return mask
@@ -38,7 +44,7 @@ def mypolygon_perimeter(X, Y, image_shape):
 imgs = cv2.imreadmulti("health.tif", flags=cv2.IMREAD_GRAYSCALE + cv2.IMREAD_ANYDEPTH)[1]
 
 for i, img in enumerate(imgs):
-    filename = f"face_1_frame-{i}.png"
+    filename = f'face_1_frame-{i}'+str(mSize)+'.png'
     print(f"Processing frame {i} into file {filename}")
     # normalize image to 8-bit range
     img_norm = exposure.rescale_intensity(img, in_range='image', out_range=(0, 255)).astype(np.uint8)
@@ -147,8 +153,8 @@ for k in range(0, int(toplam_eleman)):
 ConvolResults = []
 
 for value in range(0,len(FilteringResutls)):
-    img_gaussian_noise = img_as_float(io.imread('face_1_frame-0.png', as_gray=True))
-    img_salt_pepper_noise = img_as_float(io.imread('face_1_frame-0.png', as_gray=True))
+    img_gaussian_noise = img_as_float(io.imread('face_1_frame-0'+str(mSize)+'.png', as_gray=True))
+    img_salt_pepper_noise = img_as_float(io.imread('face_1_frame-0'+str(mSize)+'.png', as_gray=True))
     img = img_salt_pepper_noise
     kernel = FilteringResutls[value]
 
@@ -159,7 +165,7 @@ for value in range(0,len(FilteringResutls)):
 
     conv_using_scipy2 = convolve(img, kernel, mode='constant', cval=0.0)
 
-    filename_1 = f"nothasta bireye Uygulanan Filtre-{value}.png"
+    filename_1 = f"nothasta bireye Uygulanan Filtre-{value}-{str(mSize)}.png"
     filename_2 = f"conv_using_scipy-{value}."
     filename_3 = f"conv_using_scipy2-{value}"
     #cv2.imshow("Original", img)
@@ -174,7 +180,7 @@ selVals,colAssignment  = np.array(ConvolResults).max(0),np.array(ConvolResults).
 #maxInColumns = np.amax(ConvolResults, axis=0)
 np.set_printoptions(threshold=sys.maxsize)
 #cv2.imshow("nothasta_Max_Responce.png", selVals)
-plt.imsave("maxResponce.png", selVals, cmap='gray')
+plt.imsave("maxResponce"+str(mSize)+".png", selVals, cmap='gray')
 
 """
 for i in range(0,512):
@@ -188,7 +194,7 @@ for i in range(0,512):
 """
 print('matris2', colAssignment)
 #plt.imsave("test.png",colAssignment)
-plt.imsave("nothasta_yönelim.png",colAssignment)
+plt.imsave("nothasta_yönelim"+str(mSize)+".png",colAssignment)
 c = plt.imshow(colAssignment)
 bounds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 plt.colorbar(c,boundaries=bounds)
@@ -198,7 +204,7 @@ plt.show()
 
 
 for i in range(0,10,1):
-    new_name="saglikli"+str(i)+".png"
+    new_name="saglikli"+str(i)+str(mSize)+ ".png"
     new_colAssignment=np.where(colAssignment == i, colAssignment, -1)
     plt.imsave(new_name, new_colAssignment)
 
@@ -275,7 +281,7 @@ for i in range(0,10,1):
         cv2.waitKey(0)"""
 
 for x in range(0,10,1):
-    img = cv2.imread('saglikli'+str(x)+'.png', 0)
+    img = cv2.imread('saglikli'+str(x)+ str(mSize)+ '.png', 0)
     img = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)[1]  # ensure binary
     retval, labels = cv2.connectedComponents(img)
 
@@ -309,36 +315,36 @@ for x in range(0,10,1):
     labeled_img[label_hue==0] = 0
 
     #cv2.imshow('labeled'+x+'.png', labeled_img)
-    cv2.imwrite('labeled'+str(x)+'.png', labeled_img)
+    cv2.imwrite('labeled'+str(x)+ str(mSize)+ '.png', labeled_img)
     cv2.waitKey(0)
 
-img1 = cv2.imread('labeled0.png')
-img2 = cv2.imread('labeled1.png')
+img1 = cv2.imread('labeled0'+str(mSize)+'.png')
+img2 = cv2.imread('labeled1'+str(mSize)+'.png')
 dst = cv2.addWeighted(img1, 1, img2, 1, 0)
-img3 = cv2.imread('labeled2.png')
+img3 = cv2.imread('labeled2'+str(mSize)+'.png')
 dst1 = cv2.addWeighted(dst, 1, img3, 1, 0)
-img4 = cv2.imread('labeled3.png')
+img4 = cv2.imread('labeled3'+str(mSize)+'.png')
 dst2 = cv2.addWeighted(dst1, 1, img4, 1, 0)
-img5 = cv2.imread('labeled4.png')
+img5 = cv2.imread('labeled4'+str(mSize)+'.png')
 dst3 = cv2.addWeighted(dst2, 1, img5, 1, 0)
-img6 = cv2.imread('labeled5.png')
+img6 = cv2.imread('labeled5'+str(mSize)+'.png')
 dst4 = cv2.addWeighted(dst3, 1, img6, 1, 0)
-img7 = cv2.imread('labeled6.png')
+img7 = cv2.imread('labeled6'+str(mSize)+'.png')
 dst5 = cv2.addWeighted(dst4, 1, img7, 1, 0)
-img8 = cv2.imread('labeled7.png')
+img8 = cv2.imread('labeled7'+str(mSize)+'.png')
 dst6 = cv2.addWeighted(dst5, 1, img8, 1, 0)
-img9 = cv2.imread('labeled8.png')
+img9 = cv2.imread('labeled8'+str(mSize)+'.png')
 dst7 = cv2.addWeighted(dst6, 1, img9, 1, 0)
-img10 = cv2.imread('labeled9.png')
+img10 = cv2.imread('labeled9'+str(mSize)+'.png')
 dst8 = cv2.addWeighted(dst7, 1, img10, 1, 0)
 
 #cv2.imshow('Blended Image',dst8)
-plt.imsave("labeled10.png" , dst8)
+plt.imsave('labeled10'+str(mSize)+'.png' , dst8)
 
 
 YonelimYuzdeler = []
 for x in range(0,11,1):
-    img = Image.open("labeled"+str(x)+'.png')
+    img = Image.open("labeled"+str(x)+str(mSize)+'.png')
     for i in range(0, img.size[0] - 1):
         for j in range(0, img.size[1] - 1):
             pixelColorVals = img.getpixel((i, j));
@@ -346,9 +352,9 @@ for x in range(0,11,1):
             greenPixel = 255 - pixelColorVals[1];  # Negate green pixel
             bluePixel = 255 - pixelColorVals[2];  # Negate blue pixel
             img.putpixel((i, j), (redPixel, greenPixel, bluePixel));
-    img.save("new.png")
+    img.save('new'+str(mSize)+'.png')
 
-    img = cv2.imread('new.png')
+    img = cv2.imread('new'+str(mSize)+'.png')
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     _, thresh = cv2.threshold(img, 244, 255, cv2.THRESH_BINARY_INV)
     kernal = np.ones((2, 2), np.uint8)
@@ -375,21 +381,21 @@ kernel = np.ones((10, 10), 'uint8')
 #dst8
 dilate_img = cv2.dilate(dst8, kernel, iterations=1)
 cv2.imshow('Dilated Image', dilate_img)
-cv2.imwrite("Dilated Image.png",dilate_img)
+cv2.imwrite('Dilated Image'+str(mSize)+'.png',dilate_img)
 cv2.waitKey(0)
 
 
-img = img_as_float(io.imread('Dilated Image.png', as_gray=True))
+img = img_as_float(io.imread('Dilated Image'+str(mSize)+'.png', as_gray=True))
 for i in range(0,512):
     for k in range(0,512):
         if(img[i][k]>0):
             img[i][k] = 1
 cv2.imshow("BlackandWhite",img)
-plt.imsave("Dilated Image With Defauld_BlackandWhite.png",img)
+plt.imsave('Dilated Image With Defauld_BlackandWhite'+str(mSize)+'.png',img)
 cv2.waitKey(0)
-img2 = img_as_float(io.imread('face_1_frame-0.png', as_gray=True))
+img2 = img_as_float(io.imread('face_1_frame-0'+str(mSize)+'.png', as_gray=True))
 result=img2*img
-plt.imsave("Dilated Image With Defauld.png",result)
+plt.imsave('Dilated Image With Defauld'+str(mSize)+'.png',result)
 cv2.imshow("result",result)
 cv2.waitKey(0)
 
@@ -398,7 +404,7 @@ cv2.waitKey(0)
 
 
 
-img = cv2.imread('Dilated Image With Defauld.png')
+img = cv2.imread('Dilated Image With Defauld'+str(mSize)+'.png')
 gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
 
 kernel_size = 5
@@ -428,7 +434,7 @@ for line in lines:
 lines_edges = cv2.addWeighted(img, 0.8, line_image, 1, 0)
 
 cv2.imshow("lines_edges",lines_edges)
-plt.imsave("lines_edges.png",lines_edges)
+plt.imsave('lines_edges'+str(mSize)+'.png',lines_edges)
 cv2.waitKey(0)
 
 
