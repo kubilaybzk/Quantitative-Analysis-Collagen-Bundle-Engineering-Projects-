@@ -1,9 +1,8 @@
 '''
-Kubilay Bozak
-Samet Kara
-Hüsna Şişli
+Kubilay Bozak  kubilaybozak@gmail.com
+Samet Kara     samet.krx@gmail.com
+Hüsna Şişli    husnasisli@gmail.com
 '''
-
 
 import math
 import skimage.exposure as exposure
@@ -13,11 +12,13 @@ import skimage
 import sys
 import cv2
 import numpy as np
+import numpy
 from scipy.signal import convolve2d
 from scipy.ndimage.filters import convolve
 from skimage import io, img_as_float
 import time
 from PIL import Image
+np.set_printoptions(threshold=sys.maxsize)
 
 #Görselin adı
 #nBands = 10
@@ -1000,6 +1001,10 @@ def Normal2(nBands,mSize,mzSize):
 
     plt.imsave('Dilated Image With Defauld' + str(mSize) + '.png', result)
     cv2.imshow("result", result)
+
+    numpy.savetxt("filename", result, newline=" ")
+
+
     ###cv2.waitKey(0)
 
     img = cv2.imread('Dilated Image With Defauld' + str(mSize) + '.png')
