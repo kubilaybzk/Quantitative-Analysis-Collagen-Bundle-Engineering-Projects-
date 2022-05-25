@@ -26,7 +26,7 @@ np.set_printoptions(threshold=sys.maxsize)
 #mzSize = 5
 
 
-def small(nBands,mSize,mzSize):
+def small(nBands,mSize,mzSize,imgName):
 
     nBands = nBands
     mSize = mSize
@@ -42,7 +42,7 @@ def small(nBands,mSize,mzSize):
         return rr, cc
 
     # read images
-    imgs = cv2.imreadmulti("health.tif", flags=cv2.IMREAD_GRAYSCALE + cv2.IMREAD_ANYDEPTH)[1]
+    imgs = cv2.imreadmulti(imgName, flags=cv2.IMREAD_GRAYSCALE + cv2.IMREAD_ANYDEPTH)[1]
 
     for i, img in enumerate(imgs):
         filename = f"face_1_frame-{i}.png"
@@ -196,7 +196,7 @@ def small(nBands,mSize,mzSize):
     plt.title('Yönelim Haritası', fontweight="bold")
     plt.show()
     # cv2.imshow("sssss", maxInColumns)
-#small(10,10,5)
+small(10,10,5,"1.tif")
 
 def Normal(nBands,mSize,mzSize):
 
@@ -660,7 +660,7 @@ def DilateExampe(mSize,b,c):
 
 ### V2 bazı özellikler silindi.
 
-def Normal2(nBands,mSize,mzSize):
+def Normal2(nBands,mSize,mzSize,imgName):
 
     nBands = nBands
     mSize = mSize
@@ -676,7 +676,7 @@ def Normal2(nBands,mSize,mzSize):
         return rr, cc
 
     # read images
-    imgs = cv2.imreadmulti("health.tif", flags=cv2.IMREAD_GRAYSCALE + cv2.IMREAD_ANYDEPTH)[1]
+    imgs = cv2.imreadmulti(imgName, flags=cv2.IMREAD_GRAYSCALE + cv2.IMREAD_ANYDEPTH)[1]
 
     for i, img in enumerate(imgs):
         filename = f'face_1_frame-{i}' + str(mSize) + '.png'
@@ -1002,7 +1002,7 @@ def Normal2(nBands,mSize,mzSize):
     plt.imsave('Dilated Image With Defauld' + str(mSize) + '.png', result)
     cv2.imshow("result", result)
 
-    numpy.savetxt("filename", result, newline=" ")
+
 
 
     ###cv2.waitKey(0)
@@ -1039,7 +1039,7 @@ def Normal2(nBands,mSize,mzSize):
     cv2.imshow("lines_edges", lines_edges)
     plt.imsave('lines_edges' + str(mSize) + '.png', lines_edges)
     cv2.waitKey(0)
-Normal2(10,40,5)
+Normal2(10,40,5,"1.tif")
 
 
 def DilateV2(mSize):
