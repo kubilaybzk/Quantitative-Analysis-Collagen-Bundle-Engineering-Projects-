@@ -4,13 +4,14 @@ Samet Kara     samet.krx@gmail.com
 Hüsna Şişli    husnasisli@gmail.com
 '''
 
-import math
+import math as math
 import skimage.exposure as exposure
 import matplotlib.pyplot as plt
 from skimage import draw
 import skimage
 import sys
 import cv2
+import cv2 as cv
 import numpy as np
 import numpy
 from scipy.signal import convolve2d
@@ -20,10 +21,21 @@ import time
 from PIL import Image
 np.set_printoptions(threshold=sys.maxsize)
 
+
+
+
+
+
 #Görselin adı
 #nBands = 10
 #mSize = 40
 #mzSize = 5
+
+
+
+
+
+
 
 
 def small(nBands,mSize,mzSize,imgName):
@@ -196,7 +208,7 @@ def small(nBands,mSize,mzSize,imgName):
     plt.title('Yönelim Haritası', fontweight="bold")
     plt.show()
     # cv2.imshow("sssss", maxInColumns)
-small(10,10,5,"1.tif")
+#small(10,10,5,"1.tif")
 
 def Normal(nBands,mSize,mzSize):
 
@@ -1039,7 +1051,7 @@ def Normal2(nBands,mSize,mzSize,imgName):
     cv2.imshow("lines_edges", lines_edges)
     plt.imsave('lines_edges' + str(mSize) + '.png', lines_edges)
     cv2.waitKey(0)
-Normal2(10,40,5,"1.tif")
+#Normal2(10,40,5,"1.tif")
 
 
 def DilateV2(mSize):
@@ -1110,3 +1122,204 @@ def DilateV2(mSize):
     #plt.imsave('lines_edges' + str(mSize) + '.png', lines_edges)
     cv2.waitKey(0)
 #DilateV2(40)
+
+
+#https://automaticaddison.com/how-to-determine-the-orientation-of-an-object-using-opencv/
+def Test(a):
+    import cv2 as cv
+    from math import atan2, cos, sin, sqrt, pi
+    import numpy as np
+
+    def drawAxis(img, p_, q_, color, scale):
+        p = list(p_)
+        q = list(q_)
+
+        ## [visualization1]
+        angle = atan2(p[1] - q[1], p[0] - q[0])  # angle in radians
+        hypotenuse = sqrt((p[1] - q[1]) * (p[1] - q[1]) + (p[0] - q[0]) * (p[0] - q[0]))
+
+        # Here we lengthen the arrow by a factor of scale
+        q[0] = p[0] - scale * hypotenuse * cos(angle)
+        q[1] = p[1] - scale * hypotenuse * sin(angle)
+        cv.line(img, (int(p[0]), int(p[1])), (int(q[0]), int(q[1])), color, 3, cv.LINE_AA)
+
+        # create the arrow hooks
+        p[0] = q[0] + 9 * cos(angle + pi / 4)
+        p[1] = q[1] + 9 * sin(angle + pi / 4)
+        cv.line(img, (int(p[0]), int(p[1])), (int(q[0]), int(q[1])), color, 3, cv.LINE_AA)
+
+        p[0] = q[0] + 9 * cos(angle - pi / 4)
+        p[1] = q[1] + 9 * sin(angle - pi / 4)
+        cv.line(img, (int(p[0]), int(p[1])), (int(q[0]), int(q[1])), color, 3, cv.LINE_AA)
+        ## [visualization1]
+
+    def getOrientation(pts, img):
+        ## [pca]
+        # Construct a buffer used by the pca analysis
+        sz = len(pts)
+        data_pts = np.empty((sz, 2), dtype=np.float64)
+        for i in range(data_pts.shape[0]):
+            data_pts[i, 0] = pts[i, 0, 0]
+            data_pts[i, 1] = pts[i, 0, 1]
+
+        # Perform PCA analysis
+        mean = np.empty((0))
+        mean, eigenvectors, eigenvalues = cv.PCACompute2(data_pts, mean)
+
+        # Store the center of the object
+        cntr = (int(mean[0, 0]), int(mean[0, 1]))
+        ## [pca]
+
+        ## [visualization]
+        # Draw the principal components
+        cv.circle(img, cntr, 3, (255, 0, 255), 2)
+        p1 = (cntr[0] + 0.02 * eigenvectors[0, 0] * eigenvalues[0, 0],
+              cntr[1] + 0.02 * eigenvectors[0, 1] * eigenvalues[0, 0])
+        p2 = (cntr[0] - 0.02 * eigenvectors[1, 0] * eigenvalues[1, 0],
+              cntr[1] - 0.02 * eigenvectors[1, 1] * eigenvalues[1, 0])
+        drawAxis(img, cntr, p1, (255, 255, 0), 1)
+        drawAxis(img, cntr, p2, (0, 0, 255), 5)
+
+        angle = atan2(eigenvectors[0, 1], eigenvectors[0, 0])  # orientation in radians
+        ## [visualization]
+
+        # Label with the rotation angle
+        label = "" + str(-int(np.rad2deg(angle)) - 90) + " degrees"
+        textbox = cv.rectangle(img, (cntr[0], cntr[1] - 25), (cntr[0] + 250, cntr[1] + 10), (255, 255, 255), -1)
+        cv.putText(img, label, (cntr[0], cntr[1]), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1, cv.LINE_AA)
+
+        return angle
+
+    # Load the image
+    img = cv.imread("Dilated Image With Defauld_BlackandWhite40.png")
+
+    # Was the image there?
+    if img is None:
+        print("Error: File not found")
+        exit(0)
+
+    cv.imshow('Input Image', img)
+
+    # Convert image to grayscale
+    gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+
+    # Convert image to binary
+    _, bw = cv.threshold(gray, 10, 255, cv.THRESH_BINARY | cv.THRESH_OTSU)
+
+    # Find all the contours in the thresholded image
+    contours, _ = cv.findContours(bw, cv.RETR_LIST, cv.CHAIN_APPROX_NONE)
+
+    for i, c in enumerate(contours):
+
+        # Calculate the area of each contour
+        area = cv.contourArea(c)
+
+        # Ignore contours that are too small or too large
+        if area < 520 or 10000 < area:
+            continue
+
+        # Draw each contour only for visualisation purposes
+        cv.drawContours(img, contours, i, (0, 0, 255), 2)
+
+        # Find the orientation of each shape
+        getOrientation(c, img)
+
+    cv.imshow('Output Image', img)
+    cv.waitKey(0)
+    cv.destroyAllWindows()
+
+    # Save the output image to the current directory
+    cv.imwrite("output_img.jpg", img)
+Test("work")
+
+
+def Test2():
+    import cv2
+    import numpy as np
+    import math
+
+    # Read image
+    src = cv2.imread('Dilated Image With Defauld_BlackandWhite40.png')
+    img = src.copy()
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    mask = np.zeros_like(gray)
+
+    # Find contours in image
+    contours, _ = cv2.findContours(gray, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    cnt = contours[0]
+
+    # Draw skeleton of banana on the mask
+    img = gray.copy()
+    size = np.size(img)
+    skel = np.zeros(img.shape, np.uint8)
+    ret, img = cv2.threshold(img, 5, 255, 0)
+    element = cv2.getStructuringElement(cv2.MORPH_CROSS, (3, 3))
+    done = False
+    while (not done):
+        eroded = cv2.erode(img, element)
+        temp = cv2.dilate(eroded, element)
+        temp = cv2.subtract(img, temp)
+        skel = cv2.bitwise_or(skel, temp)
+        img = eroded.copy()
+        zeros = size - cv2.countNonZero(img)
+        if zeros == size: done = True
+    kernel = np.ones((2, 2), np.uint8)
+    skel = cv2.dilate(skel, kernel, iterations=1)
+    skeleton_contours, _ = cv2.findContours(skel, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    largest_skeleton_contour = max(skeleton_contours, key=cv2.contourArea)
+    # Extend the skeleton past the edges of the banana
+    points = []
+    for point in largest_skeleton_contour: points.append(tuple(point[0]))
+    x, y = zip(*points)
+    z = np.polyfit(x, y, 7)
+    f = np.poly1d(z)
+    x_new = np.linspace(0, img.shape[1], 300)
+    y_new = f(x_new)
+    extension = list(zip(x_new, y_new))
+    img = src.copy()
+    for point in range(len(extension) - 1):
+        a = tuple(np.array(extension[point], int))
+        b = tuple(np.array(extension[point + 1], int))
+        cv2.line(img, a, b, (0, 0, 255), 1)
+        cv2.line(mask, a, b, 255, 1)
+    mask_px = np.count_nonzero(mask)
+
+    # Find the distance between points in the contour of the banana
+    # Only look at distances that cross the mid line
+    def is_collision(mask_px, mask, a, b):
+        temp_image = mask.copy()
+        cv2.line(temp_image, a, b, 0, 2)
+        new_total = np.count_nonzero(temp_image)
+        if new_total != mask_px:
+            return True
+        else:
+            return False
+
+    def distance(a, b):
+        return math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2)
+
+    distances = []
+    for point_a in cnt[:int(len(cnt) / 2)]:
+        temp_distance = 0
+        close_distance = img.shape[0] * img.shape[1]
+        close_points = (0, 0), (0, 0)
+        for point_b in cnt:
+            A, B = tuple(point_a[0]), tuple(point_b[0])
+            dist = distance(tuple(point_a[0]), tuple(point_b[0]))
+            if is_collision(mask_px, mask, A, B):
+                if dist < close_distance:
+                    close_points = A, B
+                    close_distance = dist
+        cv2.line(img, close_points[0], close_points[1], (234, 234, 123), 1)
+        distances.append((close_distance, close_points))
+        cv2.imshow('img', img)
+        cv2.waitKey(1)
+        max_thickness = max(distances)
+        a, b = max_thickness[1][0], max_thickness[1][1]
+        cv2.line(img, a, b, (0, 255, 0), 4)
+        print("maximum thickness = ", max_thickness[0])
+#Test2()
+
+def Test3():
+    im = cv2.imread('Dilated Image With Defauld_BlackandWhite40.png')
+
